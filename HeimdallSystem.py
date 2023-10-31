@@ -27,7 +27,8 @@ class HeimdalSystem:
             self.listOfKeys.append(newKey)
             
         #for debugging
-        user = User(name="Rafael", code="02120186", role="professor")
+        user = User(name="Rafael", surname="Mantovani", code="02120186", 
+                    role="professor", course="Eng.Computação")
         self.listOfUsers.append(user)
                         
     # ---------------------------
@@ -67,12 +68,15 @@ class HeimdalSystem:
         user = User()
         try:
             user.setName(input("Digite o nome: "))
+            user.setSurname(input("Digite o sobrenome: "))
             user.setRole(input("Digite o papel: "))
+            user.setCourse(input("Digite o curso: "))
         except KeyboardInterrupt:
             logging.debug('Keyboard interrupt')
         except Exception as err:
             logging.error(err)
         
+        # reading barcode
         userCode = self.readBarcodeOnce()
         user.setCode(userCode)
         print(user) 
@@ -123,7 +127,8 @@ class HeimdalSystem:
             logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
         else :
             # find the withdraw with the userCode (only not finished withdraws)
-            withQuery = [request for request in self.listOfWithdraws if request.getUserCode() == userCode and request.getFinalTime() == None]
+            withQuery = [request for request in self.listOfWithdraws if request.getUserCode() == userCode 
+                         and request.getFinalTime() == None]
             if(withQuery == []):
                 logging.warning("Não foi feita nenhuma retirada pelo usuário.")
             

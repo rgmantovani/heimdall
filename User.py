@@ -7,12 +7,14 @@ class User:
     # constructor
     # ---------------------------
 
-    def __init__(self, name = None, code = None, photo = None, role = None):
+    def __init__(self, name = None, surname = None, code = None, 
+            photo = None, role = None, course = None):
         self.setName(name)
-        # TODO: split name and surname
+        self.setSurname(surname)
         self.setCode(code)
         self.setPhoto(photo)
         self.setRole(role)
+        self.setCourse(course)
     
     # ---------------------------
     # convert object to string
@@ -26,6 +28,18 @@ class User:
            
     def setName(self, name):
         self.name = name
+
+    # ---------------------------
+    # ---------------------------
+           
+    def setSurname(self, surname):
+        self.surname = surname
+
+    # ---------------------------
+    # ---------------------------
+           
+    def setCourse(self, course):
+        self.course = course
 
     # ---------------------------
     # ---------------------------
@@ -50,6 +64,18 @@ class User:
         
     def getName(self):
         return(self.name)
+    
+    # ---------------------------
+    # ---------------------------
+        
+    def getSurname(self):
+        return(self.surname)
+    
+    # ---------------------------
+    # ---------------------------
+        
+    def getCourse(self):
+        return(self.course)
     
     # ---------------------------
     # ---------------------------
