@@ -115,16 +115,15 @@ class HeimdalSystem:
     # --------------------------- 
     def returningKey(self):    
         
-        # scan code
         userCode = self.readBarcodeOnce()
-        
+
         # only valid users can handle keys
         userQuery = [user for user in self.listOfUsers if user.getCode() == userCode]
         if(userQuery == []):
             logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
         else :
-            # find the withdraw with the userCode
-            withQuery = [request for request in self.listOfWithdraws if request.getUserCode() == userCode]
+            # find the withdraw with the userCode (only not finished withdraws)
+            withQuery = [request for request in self.listOfWithdraws if request.getUserCode() == userCode and request.getFinalTime() == None]
             if(withQuery == []):
                 logging.warning("Não foi feita nenhuma retirada pelo usuário.")
             
@@ -132,11 +131,11 @@ class HeimdalSystem:
                 logging.info("Existe uma única retirada realizada pelo usuário.")
                 print(withQuery[0])
                 withQuery[0].finishWithdraw()
-              
+                print(withQuery[0])
                 # make the key available
                 keyQuery = [key for key in self.listOfKeys if key.getRoom() == withQuery[0].getKeyCode()]
-                keyQuery[0].returnedKey()                    
-                logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getRoom()))
+                keyQuery[0].returnKey()                    
+                logging.info("A chave {} foi retornada com sucesso.".format(keyQuery[0].getRoom()))
             
             else:
                 logging.warning("Existem várias retiradas realizadas pelo mesmo usuário.")
@@ -147,6 +146,7 @@ class HeimdalSystem:
                 #TODO: add 'all' option
                 try:
                     returnedKey = input("Qual chave gostaria de retornar ?")
+                    returnedKey.upper()
                 except KeyboardInterrupt:
                     logging.debug('Keyboard interrupt')
                 except Exception as err:
@@ -161,8 +161,8 @@ class HeimdalSystem:
                     retQuery[0].finishWithdraw()
                     # make the key available
                     keyQuery = [key for key in self.listOfKeys if key.getRoom() == returnedKey]
-                    keyQuery[0].returnedKey()                    
-                    logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getRoom()))
+                    keyQuery[0].returnKey()                    
+                    logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getKeyCode()))
     
     # ---------------------------
     # --------------------------- 
@@ -171,6 +171,7 @@ class HeimdalSystem:
         # ask which key will be withdrawn
         try:
             withKey = input("Qual chave tirar? ")
+            withKey.upper()
         except KeyboardInterrupt:
             logging.debug('Keyboard interrupt')
         except Exception as err:

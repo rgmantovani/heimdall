@@ -7,7 +7,8 @@ from HeimdallSystem import *
 # -----------------------------------------------------------------------------------
 
 if __name__ == '__main__':
-    # TODO add GUI interface1
+    # TODO add GUI interface
+    # TODO: add database
     system = HeimdalSystem()
     system.run()    
 
