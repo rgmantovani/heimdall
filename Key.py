@@ -8,7 +8,7 @@ class Key:
     # ---------------------------
     def __init__(self, room):
         self.setRoom(room)
-        self.isAvailable = True
+        self.available = True
 
     # ---------------------------
     # convert object to string
@@ -29,17 +29,17 @@ class Key:
     # ---------------------------
     # ---------------------------
     def withdrawKey(self):
-        self.isAvailable = False
+        self.available = False
 
     # ---------------------------
     # ---------------------------
     def returnKey(self):
-        self.isAvailable = True
+        self.available = True
             
     # ---------------------------
     # ---------------------------
     def isAvailable(self):
-        return(self.isAvailable)
+        return(self.available)
         
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------

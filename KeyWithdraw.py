@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 
+import config
 import time
 from datetime import datetime
-from config import *
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -14,10 +14,10 @@ class KeyWithdraw:
     # constructor
     # ---------------------------
 
-    def __init__(self, id, userCode, keyCode):
+    def __init__(self, userCode, keyCode, finalTime = None):
         
-        self.id = WITHDRAW_ID
-        WITHDRAW_ID = WITHDRAW_ID + 1
+        self.id = config.WITHDRAW_ID
+        config.WITHDRAW_ID = config.WITHDRAW_ID + 1
        
         self.setUserCode(userCode)
         self.setKeyCode(keyCode)
@@ -25,8 +25,13 @@ class KeyWithdraw:
         timestamp = time.time()
         date_time = datetime.fromtimestamp(timestamp)
         self.setInitialTime(date_time.strftime("%d-%m-%Y, %H:%M:%S"))
+                
+    # ---------------------------
+    # to string
+    # ---------------------------
         
-        self.setFinalTime(None)
+    def __str__(self):
+        return(str(self.__dict__))
         
     # ---------------------------
     # finish the key Withdraw
@@ -35,8 +40,14 @@ class KeyWithdraw:
     def finishWithdraw(self):
         timestamp = time.time()
         date_time = datetime.fromtimestamp(timestamp)
-        self.setFinalTime(date_time.strftime("%d-%m-%Y, %H:%M:%S"))
+        self.setFinalTime = date_time.strftime("%d-%m-%Y, %H:%M:%S")
+
+    # ---------------------------
+    # ---------------------------
     
+    def setInitialTime(self, initialTime):
+        self.setInitialTime = initialTime
+
     # ---------------------------
     # ---------------------------
 
