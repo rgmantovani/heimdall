@@ -2,24 +2,30 @@
 # -----------------------------------------------------------------------------------
 
 import logging
-from People import *
+from User import *
+from config import *
+from Key import *
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 
 class HeimdalSystem:
     
-    # list of users
-    users = list()
+    listOfUsers = list()
+    listOfKeys  = list()
+    # TODO: list of KeyWithdraw
     
-    # TODO: list of keys
-    
     # ---------------------------
+    # constructor
     # ---------------------------
-    def __init__(self):
-        pass
-        
+    def __init__(self):   
+        # initialize keys
+        for value in KEYS:
+            newKey = Key(room = value)
+            self.listOfKeys.append(newKey)
+                        
     # ---------------------------
+    #  Text menu
     # ---------------------------
     def menu(self):
         print("#############")
@@ -28,15 +34,16 @@ class HeimdalSystem:
         print("3 - Get a key")
         print("4 - Return a key")
         print("5 - Show users")
-        print("6 - Exit the program")    
+        print("6 - Show keys")
+        print("7 - Exit the program")    
         print("#############")
     
-        option = input("O que fazer? ")
+        option = input(" ** Choose an option ** ")
         return(option)
    
     # ---------------------------
     # ---------------------------         
-    def read_barcode_one_time(self):
+    def readBarcodeOnce(self):
         try:
             barcode_input = input("Scan the code: ")           
             print(barcode_input)
@@ -49,43 +56,71 @@ class HeimdalSystem:
     # ---------------------------
     # ---------------------------     
     def addUser(self):
-        user = People()
-        user.setName(input("Digite o nome: "))
-        userCode = self.read_barcode_one_time()
+       
+        user = User()
+        try:
+            user.setName(input("Digite o nome: "))
+            user.setRole(input("Digite o papel: "))
+        except KeyboardInterrupt:
+            logging.debug('Keyboard interrupt')
+        except Exception as err:
+            logging.error(err)
+        
+        userCode = self.readBarcodeOnce()
         user.setCode(userCode)
-        user.setRole(input("Digite o papel: "))
-        print(user)
-        #add user to the list of users
-        self.users.append(user)
-
+        print(user) 
+       
+        # cannot add an existing user
+        query = [item for item in self.listOfUsers if item.getCode() == userCode]
+        if(query == []):
+            logging.debug("Adding a new user")
+            self.listOfUsers.append(user)
+        else:
+            logging.warning("An user already exists with this code. Not adding!")
+   
     # ---------------------------
     # ---------------------------        
     def printListOfUsers(self):
-        for user in self.users:
+        for user in self.listOfUsers:
             print (user)
              
+    # ---------------------------
+    # ---------------------------        
+    def printListOfKeys(self):
+        for key in self.listOfKeys:
+            print (key)
+            
     # ---------------------------
     # ---------------------------     
   
     def run(self):
         while True:
-            option = self.menu()
+            try:
+                option = self.menu()
+            except KeyboardInterrupt:
+                logging.debug('Keyboard interrupt')
+            except Exception as err:
+                logging.error(err)
+            
             print("Opção Selecionada = ", option)
             match option:
                 case "1": 
-                    print("Cadastrando novo user")
+                    logging.debug("Adding a new user")
                     self.addUser()
                 case "2": 
-                    print("Removendo user")
+                    logging.debug("Removing an user")
                 case "3":
-                    print("Retirar uma chave")
+                    logging.debug("Get a key")
                 case "4":
-                    print("Devolver uma chave")
+                    logging.debug("Returning a Key")
                 case '5':
-                    print("Show users")
+                    logging.debug("Printing all the saved users")
                     self.printListOfUsers()
-                case "6":
-                    print("Encerrandommmm ...")
+                case '6':
+                    logging.debug("Printing all the keys")
+                    self.printListOfKeys()
+                case "7":
+                    logging.debug("Done :)")
                     exit()
 
 # -----------------------------------------------------------------------------------
