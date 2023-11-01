@@ -1,9 +1,12 @@
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 
-# python abstract class representation 
-from DatabaseHandler import *
-import config
+from Database.DatabaseHandler import DatabaseHandler
+from Entities.Key import Key
+from Entities.User import User
+from Entities.KeyWithdraw import KeyWithdraw
+
+import Utils.config as config
 import pickle
 import os
 import logging

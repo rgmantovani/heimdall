@@ -2,11 +2,8 @@
 # -----------------------------------------------------------------------------------
 
 import logging
-
-from User import *
-from Key import *
-from KeyWithdraw import *
-from FileDatabaseHandler import *
+from Entities import *
+from Database.FileDatabaseHandler import FileDatabaseHandler
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
