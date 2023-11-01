@@ -36,7 +36,7 @@ class HeimdalSystem:
     # ---------------------------
     def menu(self):
         print("#######################################")
-        print("#####     HEIMDALL JEY  KEEPER     ####")
+        print("#####     HEIMDALL KEY  KEEPER     ####")
         print("#######################################")
         
         print("1 - Adicionar um novo usuário")
@@ -50,7 +50,6 @@ class HeimdalSystem:
         print("#######################################")
     
         option = input(" ** Escolha uma opção ** \n")
-        print("#######################################")
         return(option)
    
     # ---------------------------
@@ -222,6 +221,8 @@ class HeimdalSystem:
                 logging.error(err)
             
             print("Opção Selecionada = ", option)
+            print("#######################################")
+            
             match option:
                 case "1": self.addUser()
                 case "2": 
