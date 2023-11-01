@@ -74,7 +74,6 @@ class HeimdallSystem:
         # reading barcode
         userCode = self.readBarcodeOnce()
         user.setCode(userCode)
-        print(user) 
        
         # cannot add an existing user
         query = self.sgbd.searchUserByCode(userCode=userCode)
@@ -101,9 +100,7 @@ class HeimdallSystem:
             # if there is an unique withdraw, just finish it     
             elif(len(filteredWithdraws) == 1):
                 logging.info("Existe uma única retirada realizada pelo usuário.")
-                print(filteredWithdraws[0])
                 filteredWithdraws[0].finishWithdraw()
-                print(filteredWithdraws[0])
                 # make the key available
                 filteredKey = self.sgbd.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
                 filteredKey[0].returnKey()                    
@@ -117,23 +114,30 @@ class HeimdallSystem:
                 # ask which key will be returned (include option - all, to return all of them)
                 #TODO: add 'all' option
                 try:
-                    returnedKey = input("Qual chave gostaria de retornar ?").upper()
+                    returnedKey = input("Qual chave gostaria de retornar ? Digite \'Todas\' para retornar todas ao mesmo tempo. ").upper()
                 except KeyboardInterrupt:
                     logging.debug('Keyboard interrupt')
                 except Exception as err:
                     logging.error(err)
-
-                retQuery = self.sgbd.searchWithdrawsByKeycode(keyCode=returnedKey, listOfWithdraws=filteredWithdraws)
-                if(retQuery == []):
-                    logging.warning("A chave digitada não existe ou não foi retirada anteriormente")
-                else:
-                    #finish the withdraw
-                    print(retQuery[0])
-                    retQuery[0].finishWithdraw()
-                    # make the key available
-                    keyQuery = self.sgbd.searchKeyByCode(keyCode=returnedKey)
-                    keyQuery[0].returnKey()                    
-                    logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getKeyCode()))
+                
+                if(returnedKey == "TODAS"):  # returning all the keys
+                     for operation in filteredWithdraws:
+                        operation.finishWithdraw()
+                        keyQuery = self.sgbd.searchKeyByCode(keyCode=operation.getKeyCode())
+                        keyQuery[0].returnKey()                    
+                        logging.info("A chave {} foi retornada com sucesso.".format(operation.getKeyCode()))
+                else: # returning a single key
+                    retQuery = self.sgbd.searchWithdrawsByKeycode(keyCode=returnedKey, listOfWithdraws=filteredWithdraws)
+                    if(retQuery == []):
+                        logging.warning("A chave digitada não existe ou não foi retirada anteriormente")
+                    else:
+                        #finish the withdraw
+                        print(retQuery[0])
+                        retQuery[0].finishWithdraw()
+                        # make the key available
+                        keyQuery = self.sgbd.searchKeyByCode(keyCode=returnedKey)
+                        keyQuery[0].returnKey()                    
+                        logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getKeyCode()))
     
     # ---------------------------
     # --------------------------- 
