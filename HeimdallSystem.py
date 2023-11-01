@@ -111,12 +111,38 @@ class HeimdalSystem:
             print (wtd)
 
     # ---------------------------
-    # TODO 
+    # search an user
     # --------------------------- 
 
+    def searchUserByCode(self, userCode):
+        returnedUsers = [user for user in self.listOfUsers if user.getCode() == userCode]
+        return(returnedUsers)
+
+    # ---------------------------
+    # ---------------------------
+
     # search a key
-    # search an user
+    def searchKeyByCode(self, keyCode):
+        keyQuery = [key for key in self.listOfKeys if key.getRoom() == keyCode]
+        return(keyQuery)
+
+    # ---------------------------
+    # ---------------------------
+
     # search a withdraw
+    def searchWithdraws(self, userCode, status = "all"):
+   
+        # opened, finished, all
+        returnedWithdraws = []     
+        if(status == "opened"):
+            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode 
+                        and witd.getFinalTime() == None]
+        elif(status == "finished"):
+            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode 
+                        and witd.getFinalTime() != None]
+        else:
+            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode]
+        return (returnedWithdraws)
     
     # ---------------------------
     # --------------------------- 
@@ -125,30 +151,29 @@ class HeimdalSystem:
         userCode = self.readBarcodeOnce()
 
         # only valid users can handle keys
-        userQuery = [user for user in self.listOfUsers if user.getCode() == userCode]
-        if(userQuery == []):
+        filteredUsers = self.searchUserByCode(userCode=userCode)
+        if(filteredUsers == []):
             logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
         else :
             # find the withdraw with the userCode (only not finished withdraws)
-            withQuery = [request for request in self.listOfWithdraws if request.getUserCode() == userCode 
-                         and request.getFinalTime() == None]
-            if(withQuery == []):
+            filteredWithdraws = self.searchWithdraws(userCode=userCode, status="opened")
+            if(filteredWithdraws == []):
                 logging.warning("Não foi feita nenhuma retirada pelo usuário.")
             
-            elif(len(withQuery) == 1):
+            elif(len(filteredWithdraws) == 1):
                 logging.info("Existe uma única retirada realizada pelo usuário.")
-                print(withQuery[0])
-                withQuery[0].finishWithdraw()
-                print(withQuery[0])
+                print(filteredWithdraws[0])
+                filteredWithdraws[0].finishWithdraw()
+                print(filteredWithdraws[0])
                 # make the key available
-                keyQuery = [key for key in self.listOfKeys if key.getRoom() == withQuery[0].getKeyCode()]
-                keyQuery[0].returnKey()                    
-                logging.info("A chave {} foi retornada com sucesso.".format(keyQuery[0].getRoom()))
+                filteredKey = self.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
+                filteredKey[0].returnKey()                    
+                logging.info("A chave {} foi retornada com sucesso.".format(filteredKey[0].getRoom()))
             
             else:
                 logging.warning("Existem várias retiradas realizadas pelo mesmo usuário.")
                 # showing all the withdraws with the userCode value
-                for operation in withQuery:
+                for operation in filteredWithdraws:
                     print(operation)
                 # ask which key will be returned (include option - all, to return all of them)
                 #TODO: add 'all' option
@@ -160,7 +185,7 @@ class HeimdalSystem:
                 except Exception as err:
                     logging.error(err)
 
-                retQuery = [request for request in withQuery if request.getKeyCode() == returnedKey]
+                retQuery = [request for request in filteredWithdraws if request.getKeyCode() == returnedKey]
                 if(retQuery == []):
                     logging.warning("A chave digitada não existe ou não foi retirada anteriormente")
                 else:
@@ -187,25 +212,25 @@ class HeimdalSystem:
             logging.error(err)
 
         # check if the key is available
-        keyQuery = [key for key in self.listOfKeys if key.getRoom() == withKey]
+        filteredKey = self.searchKeyByCode(keyCode=withKey)
         
         # ver se tem chave
-        if(keyQuery == []):
+        if(filteredKey == []):
             logging.warning("A chave requerida não existe.!")
-        elif(not keyQuery[0].isAvailable()):
+        elif(not filteredKey[0].isAvailable()):
             logging.warning('A chave requerida não está disponível!')
         else: 
             # only valid users can withdraw a key
             userCode = self.readBarcodeOnce()
-            userQuery = [user for user in self.listOfUsers if user.getCode() == userCode]
-            if(userQuery == []):
+            filteredUser = self.searchUserByCode(userCode=userCode)
+            if(filteredUser == []):
                 logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
             else :
                 operation = KeyWithdraw(userCode = userCode, keyCode = withKey)
                 # key was withdrawn
-                keyQuery[0].withdrawKey()
+                filteredKey[0].withdrawKey()
                 self.listOfWithdraws.append(operation)
-                logging.info("A chave {} foi retirada com sucesso.".format(keyQuery[0].getRoom()))
+                logging.info("A chave {} foi retirada com sucesso.".format(filteredKey[0].getRoom()))
                 print(operation)  
         
     # ---------------------------
