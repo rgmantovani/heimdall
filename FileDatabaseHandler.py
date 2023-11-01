@@ -140,6 +140,19 @@ class FileDatabaseHandler(DatabaseHandler):
     # ---------------------------
     # ---------------------------
 
+    def removeAnUser(self, userCode):
+       
+        index = []
+        #TODO: improve this
+        for i in range(0, len(self.listOfUsers)):
+            user = self.listOfUsers[i]
+            if user.getCode() == userCode:
+                index = i
+        self.listOfUsers.pop(index)
+
+    # ---------------------------
+    # ---------------------------
+
     def insertNewKey(self, newKey):
         self.listOfKeys.append(newKey) 
 

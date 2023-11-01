@@ -81,7 +81,19 @@ class HeimdallSystem:
             self.sgbd.insertNewUser(newUser=user)
         else:
             logging.warning("Já existe um usuário com esse código. Operação não realizada!")
-         
+   
+    # ---------------------------
+    # --------------------------- 
+    def removeUser(self):
+        # remove a valid user
+        userCode = self.readBarcodeOnce()
+        filteredUsers = self.sgbd.searchUserByCode(userCode=userCode)
+        if(filteredUsers == []):
+            logging.warning("Não existe usuário com esse código para ser removido. Operação não realizada!")
+        else:
+            self.sgbd.removeAnUser(userCode=userCode)
+            logging.debug("Removendo um usuário.")
+
     # ---------------------------
     # --------------------------- 
     def returningKey(self):    
@@ -185,8 +197,7 @@ class HeimdallSystem:
             
             match option:
                 case "1": self.addUser()
-                case "2": 
-                    logging.debug("Removing an user")
+                case "2": self.removeUser()
                 case "3": self.withdrawingKey()
                 case "4": self.returningKey()
                 case '5': self.sgbd.listAllUsers()

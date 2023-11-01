@@ -38,6 +38,10 @@ class DatabaseHandler(ABC):
         pass 
 
     @abstractmethod
+    def removeAnUser(self, userCode):
+        pass
+
+    @abstractmethod
     def insertNewKey(self, newKey):
         pass 
 
