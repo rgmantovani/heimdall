@@ -21,7 +21,7 @@ class HeimdalSystem:
     # constructor
     # ---------------------------
     def __init__(self):   
-        # initialize keys
+        # initialize all available keys
         for value in config.KEYS:
             newKey = Key(room = value)
             self.listOfKeys.append(newKey)
@@ -35,7 +35,10 @@ class HeimdalSystem:
     #  Text menu
     # ---------------------------
     def menu(self):
-        print("#############")
+        print("#######################################")
+        print("#####     HEIMDALL JEY  KEEPER     ####")
+        print("#######################################")
+        
         print("1 - Adicionar um novo usuário")
         print("2 - Remover um usuário")
         print("3 - Retirar uma chave")
@@ -44,9 +47,10 @@ class HeimdalSystem:
         print("6 - Mostrar chaves cadastradas")
         print("7 - Mostrar histórico de retirada de chaves") 
         print("8 - Encerrar o programa")    
-        print("#############")
+        print("#######################################")
     
         option = input(" ** Escolha uma opção ** \n")
+        print("#######################################")
         return(option)
    
     # ---------------------------
@@ -176,7 +180,8 @@ class HeimdalSystem:
         # ask which key will be withdrawn
         try:
             withKey = input("Qual chave tirar? ")
-            withKey.upper()
+            withKey = withKey.upper()
+            print(withKey)
         except KeyboardInterrupt:
             logging.debug('Keyboard interrupt')
         except Exception as err:
