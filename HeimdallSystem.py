@@ -7,34 +7,26 @@ import config
 from User import *
 from Key import *
 from KeyWithdraw import *
+from FileDatabaseHandler import *
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
 
-class HeimdalSystem:
-    
-    listOfUsers     = list()
-    listOfKeys      = list()
-    listOfWithdraws = list()
-    
+class HeimdallSystem:
+     
     # ---------------------------
     # constructor
     # ---------------------------
     def __init__(self):   
-        # initialize all available keys
-        for value in config.KEYS:
-            newKey = Key(room = value)
-            self.listOfKeys.append(newKey)
-            
-        #for debugging
-        user = User(name="Rafael", surname="Mantovani", code="02120186", 
-                    role="professor", course="Eng.Computação")
-        self.listOfUsers.append(user)
+        
+        # database handler based on file systems (binary file)
+        self.sgbd = FileDatabaseHandler()
                         
     # ---------------------------
     #  Text menu
     # ---------------------------
     def menu(self):
+        
         print("#######################################")
         print("#####     HEIMDALL KEY  KEEPER     ####")
         print("#######################################")
@@ -85,78 +77,25 @@ class HeimdalSystem:
         print(user) 
        
         # cannot add an existing user
-        query = [item for item in self.listOfUsers if item.getCode() == userCode]
+        query = self.sgbd.searchUserByCode(userCode=userCode)
         if(query == []):
             logging.debug("Adicionando um novo usuário.")
-            self.listOfUsers.append(user)
+            self.sgbd.insertNewUser(newUser=user)
         else:
             logging.warning("Já existe um usuário com esse código. Operação não realizada!")
-   
-    # ---------------------------
-    # ---------------------------        
-    def printListOfUsers(self):
-        for user in self.listOfUsers:
-            print (user)
-             
-    # ---------------------------
-    # ---------------------------        
-    def printListOfKeys(self):
-        for key in self.listOfKeys:
-            print (key)
-            
-    # ---------------------------
-    # --------------------------- 
-    def printListOfWithdraws(self):
-        for wtd in self.listOfWithdraws:
-            print (wtd)
-
-    # ---------------------------
-    # search an user
-    # --------------------------- 
-
-    def searchUserByCode(self, userCode):
-        returnedUsers = [user for user in self.listOfUsers if user.getCode() == userCode]
-        return(returnedUsers)
-
-    # ---------------------------
-    # ---------------------------
-
-    # search a key
-    def searchKeyByCode(self, keyCode):
-        keyQuery = [key for key in self.listOfKeys if key.getRoom() == keyCode]
-        return(keyQuery)
-
-    # ---------------------------
-    # ---------------------------
-
-    # search a withdraw
-    def searchWithdraws(self, userCode, status = "all"):
-   
-        # opened, finished, all
-        returnedWithdraws = []     
-        if(status == "opened"):
-            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode 
-                        and witd.getFinalTime() == None]
-        elif(status == "finished"):
-            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode 
-                        and witd.getFinalTime() != None]
-        else:
-            returnedWithdraws = [witd for witd in self.listOfWithdraws if witd.getUserCode() == userCode]
-        return (returnedWithdraws)
-    
+         
     # ---------------------------
     # --------------------------- 
     def returningKey(self):    
         
         userCode = self.readBarcodeOnce()
-
         # only valid users can handle keys
-        filteredUsers = self.searchUserByCode(userCode=userCode)
+        filteredUsers = self.sgbd.searchUserByCode(userCode=userCode)
         if(filteredUsers == []):
             logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
         else :
             # find the withdraw with the userCode (only not finished withdraws)
-            filteredWithdraws = self.searchWithdraws(userCode=userCode, status="opened")
+            filteredWithdraws = self.sgbd.searchWithdrawsByUsercode(userCode=userCode, status="opened")
             if(filteredWithdraws == []):
                 logging.warning("Não foi feita nenhuma retirada pelo usuário.")
             
@@ -166,7 +105,7 @@ class HeimdalSystem:
                 filteredWithdraws[0].finishWithdraw()
                 print(filteredWithdraws[0])
                 # make the key available
-                filteredKey = self.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
+                filteredKey = self.sgbd.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
                 filteredKey[0].returnKey()                    
                 logging.info("A chave {} foi retornada com sucesso.".format(filteredKey[0].getRoom()))
             
@@ -254,9 +193,9 @@ class HeimdalSystem:
                     logging.debug("Removing an user")
                 case "3": self.withdrawingKey()
                 case "4": self.returningKey()
-                case '5': self.printListOfUsers()
-                case '6': self.printListOfKeys()
-                case '7': self.printListOfWithdraws()
+                case '5': self.sgbd.listAllUsers()
+                case '6': self.sgbd.listAllKeys()
+                case '7': self.sgbd.listAllWithdraws()
                 case "8": exit()
 
 # -----------------------------------------------------------------------------------

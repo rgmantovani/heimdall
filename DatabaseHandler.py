@@ -50,7 +50,7 @@ class DatabaseHandler(ABC):
         pass 
 
     @abstractmethod
-    def listAllKeys(self, status):
+    def listAllKeys(self, status="all"):
         pass 
 
     @abstractmethod
