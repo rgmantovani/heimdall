@@ -26,7 +26,7 @@ class DatabaseHandler(ABC):
         pass 
 
     @abstractmethod
-    def searchWithdrawsByKeycode(self, keyCode, status="all"):
+    def searchWithdrawsByKeycode(self, keyCode, listOfWithdraws, status="all"):
         pass 
 
     @abstractmethod

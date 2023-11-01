@@ -70,20 +70,20 @@ class FileDatabaseHandler(DatabaseHandler):
     # ---------------------------
     # ---------------------------
 
-    def searchWithdrawsByKeycode(self, keyCode, status="all"):
+    def searchWithdrawsByKeycode(self, keyCode, listOfWithdraws, status="all"):
         # status = {opened, finished, all}
         # TODO: add exception if an invalid option is choosed
         returnedWithdraws = []     
         if(status == "opened"):
-            returnedWithdraws = [witd for witd in self.listOfWithdraws 
+            returnedWithdraws = [witd for witd in listOfWithdraws 
                                  if witd.getKeyCode() == keyCode 
                                  and witd.getFinalTime() == None]
         elif(status == "finished"):
-            returnedWithdraws = [witd for witd in self.listOfWithdraws 
+            returnedWithdraws = [witd for witd in listOfWithdraws 
                                  if witd.getKeyCode() == keyCode 
                                  and witd.getFinalTime() != None]
         else:
-            returnedWithdraws = [witd for witd in self.listOfWithdraws 
+            returnedWithdraws = [witd for witd in listOfWithdraws 
                                  if witd.getKeyCode() == keyCode]
         return (returnedWithdraws) 
 
@@ -120,7 +120,8 @@ class FileDatabaseHandler(DatabaseHandler):
     # ---------------------------
 
     def withdrawKey(self, keyCode, userCode):
-        pass 
+        operation = KeyWithdraw(userCode=userCode, keyCode=keyCode)
+        self.listOfWithdraws.append(operation) 
 
     # ---------------------------
     # ---------------------------

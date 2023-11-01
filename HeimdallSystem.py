@@ -98,7 +98,7 @@ class HeimdallSystem:
             filteredWithdraws = self.sgbd.searchWithdrawsByUsercode(userCode=userCode, status="opened")
             if(filteredWithdraws == []):
                 logging.warning("Não foi feita nenhuma retirada pelo usuário.")
-            
+            # if there is an unique withdraw, just finish it     
             elif(len(filteredWithdraws) == 1):
                 logging.info("Existe uma única retirada realizada pelo usuário.")
                 print(filteredWithdraws[0])
@@ -108,7 +108,7 @@ class HeimdallSystem:
                 filteredKey = self.sgbd.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
                 filteredKey[0].returnKey()                    
                 logging.info("A chave {} foi retornada com sucesso.".format(filteredKey[0].getRoom()))
-            
+            #there are more than one opened withdraws for this user
             else:
                 logging.warning("Existem várias retiradas realizadas pelo mesmo usuário.")
                 # showing all the withdraws with the userCode value
@@ -117,14 +117,13 @@ class HeimdallSystem:
                 # ask which key will be returned (include option - all, to return all of them)
                 #TODO: add 'all' option
                 try:
-                    returnedKey = input("Qual chave gostaria de retornar ?")
-                    returnedKey.upper()
+                    returnedKey = input("Qual chave gostaria de retornar ?").upper()
                 except KeyboardInterrupt:
                     logging.debug('Keyboard interrupt')
                 except Exception as err:
                     logging.error(err)
 
-                retQuery = [request for request in filteredWithdraws if request.getKeyCode() == returnedKey]
+                retQuery = self.sgbd.searchWithdrawsByKeycode(keyCode=returnedKey, listOfWithdraws=filteredWithdraws)
                 if(retQuery == []):
                     logging.warning("A chave digitada não existe ou não foi retirada anteriormente")
                 else:
@@ -132,7 +131,7 @@ class HeimdallSystem:
                     print(retQuery[0])
                     retQuery[0].finishWithdraw()
                     # make the key available
-                    keyQuery = [key for key in self.listOfKeys if key.getRoom() == returnedKey]
+                    keyQuery = self.sgbd.searchKeyByCode(keyCode=returnedKey)
                     keyQuery[0].returnKey()                    
                     logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getKeyCode()))
     
@@ -142,35 +141,31 @@ class HeimdallSystem:
         
         # ask which key will be withdrawn
         try:
-            withKey = input("Qual chave tirar? ")
-            withKey = withKey.upper()
-            print(withKey)
+            withKey = input("Qual chave tirar? ").upper()
         except KeyboardInterrupt:
             logging.debug('Keyboard interrupt')
         except Exception as err:
             logging.error(err)
 
         # check if the key is available
-        filteredKey = self.searchKeyByCode(keyCode=withKey)
+        filteredKey = self.sgbd.searchKeyByCode(keyCode=withKey)
         
-        # ver se tem chave
+        # check if the key exists
         if(filteredKey == []):
             logging.warning("A chave requerida não existe.!")
+        # check if the key is available
         elif(not filteredKey[0].isAvailable()):
             logging.warning('A chave requerida não está disponível!')
         else: 
             # only valid users can withdraw a key
             userCode = self.readBarcodeOnce()
-            filteredUser = self.searchUserByCode(userCode=userCode)
+            filteredUser = self.sgbd.searchUserByCode(userCode=userCode)
             if(filteredUser == []):
                 logging.warning('Não existe usuário cadastrado com esse código. Por favor, cadastre antes!')
-            else :
-                operation = KeyWithdraw(userCode = userCode, keyCode = withKey)
-                # key was withdrawn
+            else : # key was withdrawn
+                self.sgbd.withdrawKey(keyCode=withKey, userCode=userCode)
                 filteredKey[0].withdrawKey()
-                self.listOfWithdraws.append(operation)
                 logging.info("A chave {} foi retirada com sucesso.".format(filteredKey[0].getRoom()))
-                print(operation)  
         
     # ---------------------------
     # ---------------------------     
