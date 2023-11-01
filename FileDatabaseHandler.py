@@ -26,10 +26,14 @@ class FileDatabaseHandler(DatabaseHandler):
                 self.listOfUsers     = pickle.load(pickled_file)
                 self.listOfKeys      = pickle.load(pickled_file)
                 self.listOfWithdraws = pickle.load(pickled_file)
+                # countinously couting the withdraws
+                config.WITHDRAW_ID = len(self.listOfWithdraws) + 1
         else:
             self.listOfUsers     = list()
             self.listOfKeys      = list()
             self.listOfWithdraws = list()
+            # starting the counting of withdraws
+            config.WITHDRAW_ID = 1
         
             # initialize all keys as available (othersiwe it already exists)
             for value in config.KEYS:

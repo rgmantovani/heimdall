@@ -49,7 +49,6 @@ class HeimdallSystem:
     def readBarcodeOnce(self):
         try:
             barcode_input = input("Escaneie o código: ")           
-            print(barcode_input)
         except KeyboardInterrupt:
             logging.debug('Keyboard interrupt')
         except Exception as err:
@@ -111,8 +110,7 @@ class HeimdallSystem:
                 # showing all the withdraws with the userCode value
                 for operation in filteredWithdraws:
                     print(operation)
-                # ask which key will be returned (include option - all, to return all of them)
-                #TODO: add 'all' option
+                # ask which key will be returned (there is an option 'all' to return all of them)
                 try:
                     returnedKey = input("Qual chave gostaria de retornar ? Digite \'Todas\' para retornar todas ao mesmo tempo. ").upper()
                 except KeyboardInterrupt:
@@ -132,7 +130,6 @@ class HeimdallSystem:
                         logging.warning("A chave digitada não existe ou não foi retirada anteriormente")
                     else:
                         #finish the withdraw
-                        print(retQuery[0])
                         retQuery[0].finishWithdraw()
                         # make the key available
                         keyQuery = self.sgbd.searchKeyByCode(keyCode=returnedKey)
