@@ -4,6 +4,8 @@
 # python abstract class representation 
 from DatabaseHandler import *
 import config
+import pickle
+import os
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -16,21 +18,42 @@ class FileDatabaseHandler(DatabaseHandler):
 
     def __init__(self, filepath=None):
 
-        #TODO: create a binary file using pickle (filepath)
-    
-        self.listOfUsers     = list()
-        self.listOfKeys      = list()
-        self.listOfWithdraws = list()
+        #create a binary file using pickle (filepath) / restoring existing values
+        self.datafile = "filedatabase.db"
+        if os.path.exists(self.datafile):
+            print(" - reading an existing file")
+            with open(self.datafile, 'rb') as pickled_file:
+                self.listOfUsers     = pickle.load(pickled_file)
+                self.listOfKeys      = pickle.load(pickled_file)
+                self.listOfWithdraws = pickle.load(pickled_file)
+        else:
+            self.listOfUsers     = list()
+            self.listOfKeys      = list()
+            self.listOfWithdraws = list()
         
-        # initialize all keys as available
-        for value in config.KEYS:
-            newKey = Key(room=value)
-            self.insertNewKey(newKey)
+            # initialize all keys as available (othersiwe it already exists)
+            for value in config.KEYS:
+                newKey = Key(room=value)
+                self.insertNewKey(newKey)
             
-        #for debugging
+        # ----------------
+        # for debugging
+        # ---------------
         user = User(name="Rafael", surname="Mantovani", code="02120186", 
                     role="professor", course="Eng. Computação")
-        self.listOfUsers.append(user)
+        query = self.searchUserByCode(userCode=user.getCode())
+        if(query == []):
+            self.insertNewUser(newUser=user)
+
+    # ---------------------------
+    # destructor
+    # ---------------------------
+    def __del__(self):
+        print("exporting data to the datafile")
+        with open(self.datafile, 'wb') as pickle_file:
+            pickle.dump(self.listOfUsers, pickle_file)
+            pickle.dump(self.listOfKeys, pickle_file)
+            pickle.dump(self.listOfWithdraws, pickle_file)
 
     # ---------------------------
     # search an user
