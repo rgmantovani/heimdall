@@ -2,7 +2,6 @@
 # -----------------------------------------------------------------------------------
 
 import logging
-import config
 
 from User import *
 from Key import *

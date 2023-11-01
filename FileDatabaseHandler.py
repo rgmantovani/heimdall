@@ -6,6 +6,7 @@ from DatabaseHandler import *
 import config
 import pickle
 import os
+import logging
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -53,11 +54,11 @@ class FileDatabaseHandler(DatabaseHandler):
     # destructor
     # ---------------------------
     def __del__(self):
-        print("exporting data to the datafile")
-        with open(self.datafile, 'wb') as pickle_file:
-            pickle.dump(self.listOfUsers, pickle_file)
-            pickle.dump(self.listOfKeys, pickle_file)
-            pickle.dump(self.listOfWithdraws, pickle_file)
+        logging.debug("Exportando os dados no arquivo de dados.")
+        with open(self.datafile, 'wb') as pickled_file:
+            pickle.dump(self.listOfUsers, pickled_file)
+            pickle.dump(self.listOfKeys, pickled_file)
+            pickle.dump(self.listOfWithdraws, pickled_file)
 
     # ---------------------------
     # search an user
@@ -79,7 +80,7 @@ class FileDatabaseHandler(DatabaseHandler):
 
     def searchWithdrawsByUsercode(self, userCode, status="all"):
         # status = {opened, finished, all}
-        # TODO: add exception if an invalid option is choosed
+        # TODO: add exception if an invalid option is choosen
         returnedWithdraws = []     
         if(status == "opened"):
             returnedWithdraws = [witd for witd in self.listOfWithdraws 
@@ -119,7 +120,7 @@ class FileDatabaseHandler(DatabaseHandler):
 
     def searchWithdrawsByStatus(self, status="all"):
         # status = {opened, finished, all}
-        # TODO: add exception if an invalid option is choosed
+        # TODO: add exception if an invalid option is choosen
         returnedWithdraws = []     
         if(status == "opened"):
             returnedWithdraws = [witd for witd in self.listOfWithdraws 
