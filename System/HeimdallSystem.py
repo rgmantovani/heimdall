@@ -2,8 +2,9 @@
 # -----------------------------------------------------------------------------------
 
 import logging
-from Entities import *
+from Entities.User import User
 from Database.FileDatabaseHandler import FileDatabaseHandler
+from Database.RemoteDatabaseHandler import RemoteDatabaseHandler
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -16,7 +17,10 @@ class HeimdallSystem:
     def __init__(self):   
         
         # database handler based on file systems (binary file)
-        self.sgbd = FileDatabaseHandler()
+        #self.sgbd = FileDatabaseHandler()
+        
+        # database handler based on MariaDB systems (remote access)
+        self.sgbd = RemoteDatabaseHandler()
                         
     # ---------------------------
     #  Text menu
@@ -110,7 +114,8 @@ class HeimdallSystem:
                 filteredWithdraws[0].finishWithdraw()
                 # make the key available
                 filteredKey = self.sgbd.searchKeyByCode(keyCode=filteredWithdraws[0].getKeyCode()) 
-                filteredKey[0].returnKey()                    
+                filteredKey[0].returnKey()
+                self.sgbd.returnKey(userCode, filteredKey[0].getRoom())                   
                 logging.info("A chave {} foi retornada com sucesso.".format(filteredKey[0].getRoom()))
             #there are more than one opened withdraws for this user
             else:
@@ -131,6 +136,7 @@ class HeimdallSystem:
                         operation.finishWithdraw()
                         keyQuery = self.sgbd.searchKeyByCode(keyCode=operation.getKeyCode())
                         keyQuery[0].returnKey()                    
+                        self.sgbd.returnKey(userCode, keyQuery[0].getRoom())                   
                         logging.info("A chave {} foi retornada com sucesso.".format(operation.getKeyCode()))
                 else: # returning a single key
                     retQuery = self.sgbd.searchWithdrawsByKeycode(keyCode=returnedKey, listOfWithdraws=filteredWithdraws)
@@ -142,6 +148,7 @@ class HeimdallSystem:
                         # make the key available
                         keyQuery = self.sgbd.searchKeyByCode(keyCode=returnedKey)
                         keyQuery[0].returnKey()                    
+                        self.sgbd.returnKey(userCode, keyQuery[0].getRoom())                   
                         logging.info("A chave {} foi retornada com sucesso.".format(retQuery[0].getKeyCode()))
     
     # ---------------------------
