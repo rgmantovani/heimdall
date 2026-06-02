@@ -171,7 +171,14 @@ class FileDatabaseHandler(DatabaseHandler):
     # ---------------------------
 
     def returnKey(self, userCode, keyCode=None):
-        pass 
+        opened = self.searchWithdrawsByUsercode(userCode=userCode, status="opened")
+        for w in opened:
+            if w.getKeyCode() == keyCode:
+                w.finishWithdraw()
+                break
+        keys = self.searchKeyByCode(keyCode=keyCode)
+        if keys:
+            keys[0].returnKey()
 
     # ---------------------------
     # ---------------------------        
