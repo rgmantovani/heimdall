@@ -4,7 +4,6 @@
 import logging
 from Entities.User import User
 from Database.FileDatabaseHandler import FileDatabaseHandler
-from Database.RemoteDatabaseHandler import RemoteDatabaseHandler
 
 # -----------------------------------------------------------------------------------
 # -----------------------------------------------------------------------------------
@@ -16,11 +15,7 @@ class HeimdallSystem:
     # ---------------------------
     def __init__(self):   
         
-        # database handler based on file systems (binary file)
-        #self.sgbd = FileDatabaseHandler()
-        
-        # database handler based on MariaDB systems (remote access)
-        self.sgbd = RemoteDatabaseHandler()
+        self.sgbd = FileDatabaseHandler()
                         
     # ---------------------------
     #  Text menu
